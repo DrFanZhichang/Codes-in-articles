@@ -1,0 +1,19 @@
+# Run in R soft
+library(xlsx)
+library(Hmisc)
+data<-read.xlsx("# path about data",SheetIndex = 1)
+SP<-rcorr(as.matrix(data))
+FlattenCorrMatrix <- function(cormat, pmat) {
+  ut <- upper.tri(cormat)
+  data.frame(
+    row = rownames(cormat)[row(cormat)[ut]],
+    column = rownames(cormat)[col(cormat)[ut]],
+    cor  =(cormat)[ut],
+    p = pmat[ut]
+  )
+}
+FlattenCorrMatrix(SP$r,SP$p) # view result
+abs(FlattenCorrMatrix(SP$r,SP$p)$cor<0.95)
+FlattenCorrMatrix(SP$r,SP$p)[FlattenCorrMatrix(SP$r,SP$p)$cor<0.95] # selecting features with a spearman coefficient<0.95
+sink("path about print results to txt")
+print(FlattenCorrMatrix(SP$r,SP$p)[FlattenCorrMatrix(SP$r,SP$p)$cor<0.95])
