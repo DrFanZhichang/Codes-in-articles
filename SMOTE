@@ -1,0 +1,26 @@
+# Run in Python
+from sklearn.datasets import make_classification
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from collections import Counter
+from imblearn.over_sampling import SMOTE
+import pandas as pd
+import itertools
+import sys
+import csv
+log = open ("# path about print results to txt", mode = "a+", encoding = "utf-8")
+# np.set_printoptions(suppress=True, threshold= None)
+# show all columns
+pd.set_option('display.max_columns',None)
+# show all rows
+pd.set_option('display.max_rows',None)
+path = "# path about data"
+data = pd.read_excel(path)
+x = data[data.columns[1:]]
+y = data[data.columns[0]]
+# x = np.array(x)
+# y = np.array(y)
+smo = SMOTE(random_state = # the number about seed)
+x_smo, y_smo = smo.fit_resample(x, y)
+print(y_smo, x_smo, sep = " ", file = log)
