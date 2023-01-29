@@ -1,0 +1,15 @@
+# Run in R soft
+library(xlsx)
+library(glmnet)
+library(rvg)
+data<-read.xlsx("# path about data",sheetIndex = 1)
+data<-na.omit(data)
+x<-as.matrix(data[_:_])
+y<-as.matrix(data[_])
+lasso<-glmnet(x,y,alpha = 1,family = "binomial")
+lambdas<-seq(_,_,length.out = _)
+cv.lasso<-cv.glmnet(x,y,alph = 1,lambda = lambdas,nfolds = 10,family="binomial")
+plot(cv.lasso)
+cv.lasso$lambda.min 
+cv,lasso$lambda.1se
+plot(cv.lasso)
