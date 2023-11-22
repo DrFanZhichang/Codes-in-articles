@@ -1,0 +1,63 @@
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import GridSearchCV, cross_val_predict
+import numpy as np
+
+# Import training and test dataset
+train_data = pd.read_csv('......')
+test_data = pd.read_csv('......')
+
+# Determine independent and dependent variables
+x_columns = train_data.columns[1:]  # Assuming independent variables start from the second column to the last
+y_column = train_data.columns[0]  # The first column is the dependent variable
+
+# Extract independent and dependent variables from the training set
+X_train = train_data[x_columns]
+y_train = train_data[y_column]
+X_test = test_data[x_columns]
+
+# Set random seed
+np.random.seed(123)
+
+# Define RandomForest model
+rf_model = RandomForestClassifier()
+
+# Define the parameter grid for tuning
+param_grid = {
+    'n_estimators': [100, 200, 300],  # Number of decision trees
+    'max_depth': [None, 5, 10],  # Maximum depth of the decision trees
+    'min_samples_split': [2, 5, 10],  # Minimum number of samples required to split an internal node
+    'min_samples_leaf': [1, 2, 4]  # Minimum number of samples required at a leaf node
+}
+
+# Perform grid search for parameter tuning
+grid_search = GridSearchCV(estimator=rf_model, param_grid=param_grid, cv=10, scoring='roc_auc')
+grid_search.fit(X_train, y_train)
+
+# Output the best parameter combination
+best_params = grid_search.best_params_
+print("Best Parameters:", best_params)
+
+# Build RandomForest model with the best parameters
+best_model = RandomForestClassifier(**best_params)
+
+# Train the optimal model on the training set
+best_model.fit(X_train, y_train)
+
+# Use cross-validation to get the predicted probability for each sample
+y_pred_prob = cross_val_predict(best_model, X_train, y_train, cv=10, method='predict_proba')
+
+# Convert to Pandas DataFrame
+df_pred_prob = pd.DataFrame(y_pred_prob, columns=['Prob_Class_0', 'Prob_Class_1'])
+
+# Save the prediction probabilities as a CSV file
+df_pred_prob.to_csv('CV_prediction_probabilitiesCTRW.csv', index=False)
+
+# Predict on the test set
+y_pred_prob_test = best_model.predict_proba(X_test)
+
+# Create DataFrame containing probabilities
+prob_df_test = pd.DataFrame(y_pred_prob_test, columns=["Class_0_Probability", "Class_1_Probability"])
+
+# Save the prediction probabilities as a CSV file
+prob_df_test.to_csv("prediction_probabilitiesCTRW.csv", index=False)
