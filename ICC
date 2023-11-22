@@ -1,0 +1,29 @@
+import pandas as pd
+import pingouin as pg
+
+# Load data from two Excel files
+data1 = pd.read_csv('reader1 path')
+data2 = pd.read_csv('reader2 path')
+
+# Add a new column to indicate the observer
+data1['observer'] = 'Observer1'
+data2['observer'] = 'Observer2'
+
+# Merge the two data frames
+data = pd.concat([data1, data2])
+
+# Get all features
+features = list(data.columns)
+
+# Create an empty DataFrame to save the ICC (Intraclass Correlation Coefficient) results
+icc_results = pd.DataFrame()
+
+# Calculate ICC for each feature and save the results in icc_results
+for feature in features[1:]:
+    if feature != 'observer':
+        icc = pg.intraclass_corr(data=data, targets="patients", raters="observer", ratings=feature, nan_policy='omit')
+        icc['Feature'] = feature  # Add a new column to indicate the feature
+        icc_results = icc_results.append(icc, ignore_index=True)
+
+# Save the ICC results to a CSV file
+icc_results.to_csv('......', index=False)
