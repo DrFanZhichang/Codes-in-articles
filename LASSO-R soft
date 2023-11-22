@@ -1,0 +1,46 @@
+# Import required package
+library(glmnet)
+
+# Load data
+data <- read.csv("......")
+
+# Extract labels and features
+labels <- data[,1] # Labels are in the first column
+features <- data[,-1] # Features start from the second column
+
+# Convert to matrix format to fit the requirements of the glmnet function
+X <- as.matrix(features)
+y <- as.matrix(labels)
+
+# Build Lasso model
+lasso_model <- glmnet(X, y, family = "binomial", alpha = 1)
+
+# Use cross-validation to determine the optimal lambda value
+cv_model <- cv.glmnet(X, y, family = "binomial", alpha = 1)
+
+# Extract model coefficients
+coef <- predict(lasso_model, type="coefficients", s = cv_model$lambda.1se)
+
+# Convert coefficients to a numeric vector
+coef_vector <- as.vector(coef)
+
+# Create a data frame to store feature names and coefficients
+coef_df <- data.frame(Feature = rownames(coef), Coefficient = coef_vector)
+
+# Keep only features with non-zero coefficients, excluding "Intercept"
+non_zero_coef_df <- coef_df[coef_df$Coefficient != 0 & rownames(coef_df) != "(Intercept)", ]
+
+# Filter the original data based on the selected features
+selected_features <- non_zero_coef_df$Feature
+
+# Remove "(Intercept)" from the selected features
+selected_features <- selected_features[selected_features != "(Intercept)"]
+
+# Filter the original data based on the selected features
+selected_data <- data[, c(1, which(names(data) %in% selected_features))]
+
+# Output the filtered data frame to a CSV file
+write.csv(selected_data, file = "selected_data.csv", row.names = FALSE)
+
+plot (cv_model)
+plot (lasso_model,xvar = "lambda",label = "TRUE")
