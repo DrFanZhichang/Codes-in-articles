@@ -1,0 +1,23 @@
+class PatientAssigner:
+    def __init__(self):
+        self.center_a_count = 0
+        self.center_b_count = 0
+
+    def assign_center(self):
+        total_patients = self.center_a_count + self.center_b_count
+        if total_patients % 5 == 4:  # If the total number of assigned patients is a multiple of 4
+            self.center_b_count += 1
+            return 'Center B'
+        else:
+            self.center_a_count += 1
+            return 'Center A'
+            
+# Test the class
+assigner = PatientAssigner()
+
+# Assuming we have already assigned 9 patients
+assigner.center_a_count = 25
+assigner.center_b_count = 2
+
+# Where should the next patient be assigned?
+print('Next patient should go to', assigner.assign_center())
