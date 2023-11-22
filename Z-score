@@ -2,7 +2,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 # Read the data
-data = pd.read_csv("......")
+data = pd.read_csv('......')
 
 # Extract the feature matrix and labels
 X = data.iloc[:, 1:]  # Feature matrix, starting from the second column
@@ -21,4 +21,4 @@ X_scaled_df = pd.DataFrame(X_scaled, columns=X.columns)
 normalized_data = pd.concat([y, X_scaled_df], axis=1)
 
 # Save the normalized data as a CSV file
-normalized_data.to_csv("normalized_data.csv", index=False)
+normalized_data.to_csv('normalized_data.csv', index=False)
