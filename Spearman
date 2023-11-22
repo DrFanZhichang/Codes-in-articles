@@ -1,0 +1,36 @@
+import pandas as pd
+from scipy.stats import spearmanr
+
+# Load feature data
+data = pd.read_csv('......')
+
+# Calculate Spearman correlation coefficient matrix
+corr_matrix, _ = spearmanr(data)
+
+# Set the correlation coefficient threshold
+cor_threshold = 0.95
+
+# Remove redundant features with smaller ranges
+redundant_features = []
+n_features = corr_matrix.shape[0]
+for i in range(n_features):
+    for j in range(i + 1, n_features):
+        if abs(corr_matrix[i, j]) > cor_threshold:
+            feature_i = data.iloc[:, i]
+            feature_j = data.iloc[:, j]
+            range_i = feature_i.max() - feature_i.min()
+            range_j = feature_j.max() - feature_j.min()
+            if range_i < range_j:
+                redundant_features.append(data.columns[j])
+            else:
+                redundant_features.append(data.columns[i])
+
+# Remove redundant features from the feature matrix
+filtered_data = data.drop(redundant_features, axis=1)
+
+# Print the removed redundant features
+print("Removed redundant features:")
+print(redundant_features)
+
+# Optional: Save the feature matrix after removing redundant features
+filtered_data.to_csv("filtered_features.csv", index=False)
